@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ujian</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="content">
+        <h1 class="judul">Dashboard Manajemen Ujian</h1>
+        <div id="table-container">
+            <table>
+                <thead>
+                    <th>No</th>
+                    <th>Nama Ujian</th>
+                    <th>Jumlah Soal</th>
+                    <th>Durasi</th>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Opsi</th>
+                </thead>
+                <tbody>
+                    <% let counter = 1; %>
+                    <% data.forEach(item => { %>
+                        <tr onclick="redirectPage('<%= item.id %>');">
+                        <td><%= counter++; %></td>
+                        <td><%= item.nama_ujian %></td>
+                        <td><%= item.jumlah_soal %></td>
+                        <td><%= item.durasi %></td>
+                        <td><%= item.tanggal %></td>
+                        <td><%= item.jam %></td>
+                        <td><button onclick="deleteData('<%= item.id %>')">Hapus</button></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div id="create-upload-btn">
+        <a href="/banksoal" type="button">Bank Soal</a>
+    </div>
+    <div id="create-exam-btn">
+        <a href="/buatUjian" type="button">Buat Ujian Baru</a>
+    </div>
+    <!-- <button id="create-exam-btn">Buat Ujian Baru</button> -->
+
+
+    <script>
+        function redirectPage(itemId) {
+            // Gantilah 'halaman_tujuan.html' dengan nama halaman yang ingin Anda tuju
+            window.location.href = 'lihatUjian/' + itemId;
+        }
+        
+    </script>
+
+</body>
+</html>
