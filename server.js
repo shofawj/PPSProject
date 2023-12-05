@@ -199,6 +199,11 @@ app.post('/buatUjian', (req, res) => {
 
   const jumlahSoal = parseInt(data.jumlah_soal);
   const topic = data.topic;
+  const tingkatKesulitan = {
+    mudah: (parseInt(data.mudah) / 100) * jumlahSoal,
+    sedang: (parseInt(data.sedang) / 100) * jumlahSoal,
+    sulit: (parseInt(data.sulit) / 100) * jumlahSoal,
+};
 
   console.log('Parsed jumlahSoal:', jumlahSoal);
   console.log('Parsed topic:', topic);
@@ -223,13 +228,14 @@ app.post('/buatUjian', (req, res) => {
       console.error('Error selecting soal:', err);
     } else {
       // Log the results for debugging
-      console.log('Query results:', results);
+      console.log('Query results:', results, tingkatKesulitan);
 
       // Extract bank_soal_id, pertanyaan, and teks_pilihan columns
       selectedSoals = results.map(row => ({
         bank_soal_id: row.bank_soal_id,
         pertanyaan: row.pertanyaan,
-        teks_pilihan: row.teks_pilihan.split(',') // Split the teks_pilihan into an array
+        teks_pilihan: row.teks_pilihan.split(','),
+        tingkatKesulitan: row.tingkatKesulitan // Split the teks_pilihan into an array
       }));
 
       // Log the contents of selectedSoals for debugging
@@ -255,6 +261,39 @@ app.post('/buatUjian', (req, res) => {
     }
   });
 });
+
+function distributeSoals(soals, tingkatKesulitan) {
+  // Hitung jumlah soal yang harus dipilih untuk masing-masing tingkat kesulitan
+  const jumlahMudah = Math.ceil(tingkatKesulitan.mudah);
+  const jumlahSedang = Math.ceil(tingkatKesulitan.sedang);
+  const jumlahSulit = Math.ceil(tingkatKesulitan.sulit);
+  // console.log("Ceil = ",jumlahMudah,jumlahSedang,jumlahSulit)
+
+  // Pisahkan soal-soal berdasarkan tingkat kesulitan
+  const mudahSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Mudah');
+  const sedangSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Sedang');
+  const sulitSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Sulit');
+  // console.log("Jumlah = ",mudahSoals.length,sedangSoals.length,sulitSoals.length)
+
+  if (mudahSoals.length < jumlahMudah || sedangSoals.length < jumlahSedang || sulitSoals.length < jumlahSulit) {
+      console.error('Tidak cukup soal untuk memenuhi persyaratan kesulitan.');
+      return [];
+  }
+
+  // Ambil jumlah soal sesuai dengan kriteria
+  const selectedMudahSoals = mudahSoals.splice(0, jumlahMudah);
+  const selectedSedangSoals = sedangSoals.splice(0, jumlahSedang);
+  const selectedSulitSoals = sulitSoals.splice(0, jumlahSulit);
+  // console.log("Tingkat = ",selectedMudahSoals.length,selectedSedangSoals.length,selectedSulitSoals.length)
+  // Gabungkan soal-soal yang terpilih dari masing-masing tingkat kesulitan
+  const selectedSoals = [
+      ...selectedMudahSoals,
+      ...selectedSedangSoals,
+      ...selectedSulitSoals
+  ];
+
+  return selectedSoals;
+}
 
 // ... (the rest of your code)
 
