@@ -52,7 +52,28 @@
         function redirectPage(itemId) {
             // Gantilah 'halaman_tujuan.html' dengan nama halaman yang ingin Anda tuju
             window.location.href = 'lihatUjian/' + itemId;
+            
         }
+
+        function deleteData(itemId) {
+        fetch(`/api/exams/${itemId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Item with ID ${itemId} deleted.`);
+                // Remove the deleted row from the table dynamically
+                const deletedRow = document.querySelector(`tr[data-id="${itemId}"]`);
+                if (deletedRow) {
+                    deletedRow.remove();
+                }
+            } else {
+                console.error(`Failed to delete item with ID ${itemId}`);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
         
     </script>
 

@@ -193,49 +193,220 @@ app.get('/upload', (req, res) => {
   res.render('uploadBankSoal'); // Rendering EJS template
 });
 
+// app.post('/buatUjian', (req, res) => {
+//   const data = { ...req.body };
+//   console.log('Raw data:', data);
+
+//   const jumlahSoal = parseInt(data.jumlah_soal);
+//   const topic = data.topic;
+//   const tingkatKesulitan = {
+//     mudah: (parseInt(data.mudah) / 100) * jumlahSoal,
+//     sedang: (parseInt(data.sedang) / 100) * jumlahSoal,
+//     sulit: (parseInt(data.sulit) / 100) * jumlahSoal,
+// };
+
+
+
+//   console.log('Parsed jumlahSoal:', jumlahSoal);
+//   console.log('Parsed topic:', topic);
+
+//   const query = `
+//     SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
+//            GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
+//     FROM (
+//         SELECT * FROM bank_soal WHERE topik = ? ORDER BY RAND() LIMIT ?
+//     ) bs
+//     LEFT JOIN jawaban ja ON bs.id = ja.bank_soal_id
+//     GROUP BY bs.id
+//     ORDER BY bs.id
+//   `;
+
+//   let selectedSoals = [];
+//   console.log('Executing query:', query);
+//   console.log('Placeholder values:', [topic, jumlahSoal]);
+
+//   koneksi.query(query, [topic, jumlahSoal], (err, results) => {
+//     if (err) {
+//       console.error('Error selecting soal:', err);
+//     } else {
+//       // Log the results for debugging
+//       console.log('Query results:', results, tingkatKesulitan);
+
+//       // Extract bank_soal_id, pertanyaan, and teks_pilihan columns
+//       selectedSoals = results.map(row => ({
+//         bank_soal_id: row.bank_soal_id,
+//         pertanyaan: row.pertanyaan,
+//         teks_pilihan: row.teks_pilihan.split(','),
+//         tingkatKesulitan: row.tingkatKesulitan // Split the teks_pilihan into an array
+//       }));
+
+//       // Log the contents of selectedSoals for debugging
+//       console.log('Selected soals:', selectedSoals);
+
+//       const ujianData = {
+//         nama_ujian: data.nama_ujian,
+//         jumlah_soal: selectedSoals.length,
+//         durasi: parseInt(data.durasi),
+//         tanggal: data.tanggal,
+//         jam: data.jam,
+//         soal: JSON.stringify(selectedSoals)
+//       };
+
+//       // Log the ujianData for debugging
+//       console.log('Ujian data:', ujianData);
+
+//       // Move the function call inside the callback
+//       saveSelectedSoalsToUjian(ujianData);
+
+//       // Redirect atau berikan respons sesuai kebutuhan
+//       res.redirect('/');  // Ganti dengan halaman yang sesuai
+//     }
+//   });
+// });
+
+// app.post('/buatUjian', (req, res) => {
+//   const data = { ...req.body };
+//   console.log('Raw data:', data);
+
+//   const jumlahSoal = parseInt(data.jumlah_soal);
+//   const topics = data.topic.split(',').map(topic => topic.trim()); // Split topics and trim whitespace
+//   const tingkatKesulitan = {
+//     mudah: (parseInt(data.mudah) / 100) * jumlahSoal,
+//     sedang: (parseInt(data.sedang) / 100) * jumlahSoal,
+//     sulit: (parseInt(data.sulit) / 100) * jumlahSoal,
+//   };
+
+//   console.log('Parsed jumlahSoal:', jumlahSoal);
+//   console.log('Parsed topics:', topics);
+
+//   // Use the IN clause to select questions for multiple topics
+//   const query = `
+//     SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
+//            GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
+//     FROM (
+//         SELECT * FROM bank_soal WHERE topik IN (?) ORDER BY RAND() LIMIT ?
+//     ) bs
+//     LEFT JOIN jawaban ja ON bs.id = ja.bank_soal_id
+//     GROUP BY bs.id
+//     ORDER BY bs.id
+//   `;
+
+//   let selectedSoals = [];
+//   console.log('Executing query:', query);
+//   console.log('Placeholder values:', [topics, jumlahSoal]);
+
+//   koneksi.query(query, [topics, jumlahSoal], (err, results) => {
+//     if (err) {
+//       console.error('Error selecting soal:', err);
+//     } else {
+//       // Log the results for debugging
+//       console.log('Query results:', results, tingkatKesulitan);
+
+//       // Extract bank_soal_id, pertanyaan, and teks_pilihan columns
+//       selectedSoals = results.map((row) => ({
+//         bank_soal_id: row.bank_soal_id,
+//         pertanyaan: row.pertanyaan,
+//         teks_pilihan: row.teks_pilihan.split(','),
+//         tingkatKesulitan: row.tingkatKesulitan // Split the teks_pilihan into an array
+//       }));
+
+//       // Log the contents of selectedSoals for debugging
+//       console.log('Selected soals:', selectedSoals);
+
+//       const ujianData = {
+//         nama_ujian: data.nama_ujian,
+//         jumlah_soal: selectedSoals.length,
+//         durasi: parseInt(data.durasi),
+//         tanggal: data.tanggal,
+//         jam: data.jam,
+//         soal: JSON.stringify(selectedSoals)
+//       };
+
+//       // Log the ujianData for debugging
+//       console.log('Ujian data:', ujianData);
+
+//       // Move the function call inside the callback
+//       saveSelectedSoalsToUjian(ujianData);
+
+//       // Redirect atau berikan respons sesuai kebutuhan
+//       res.redirect('/');  // Ganti dengan halaman yang sesuai
+//     }
+//   });
+// });
+
+
+
 app.post('/buatUjian', (req, res) => {
   const data = { ...req.body };
   console.log('Raw data:', data);
 
   const jumlahSoal = parseInt(data.jumlah_soal);
-  const topic = data.topic;
-  const tingkatKesulitan = {
-    mudah: (parseInt(data.mudah) / 100) * jumlahSoal,
-    sedang: (parseInt(data.sedang) / 100) * jumlahSoal,
-    sulit: (parseInt(data.sulit) / 100) * jumlahSoal,
-};
-
+  const topics = data.topic.split(',').map(topic => topic.trim()); // Split topics and trim whitespace
+  const totalEasy = Math.ceil((parseInt(data.mudah) / 100) * jumlahSoal) || 0;
+  const totalMedium = Math.ceil((parseInt(data.sedang) / 100) * jumlahSoal) || 0;
+  const totalHard = jumlahSoal - totalEasy - totalMedium;
+  
   console.log('Parsed jumlahSoal:', jumlahSoal);
-  console.log('Parsed topic:', topic);
+  console.log('Parsed topics:', topics);
+  console.log('Calculated totals:', totalEasy, totalMedium, totalHard);  
 
+  
+
+  // Use the UNION ALL clause to select questions for each difficulty level
   const query = `
-    SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
-           GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
+    (SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
+            GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
     FROM (
-        SELECT * FROM bank_soal WHERE topik = ? ORDER BY RAND() LIMIT ?
+        SELECT * FROM bank_soal WHERE topik IN (?) AND tingkat_kesulitan = 'mudah' ORDER BY RAND() LIMIT ?
     ) bs
     LEFT JOIN jawaban ja ON bs.id = ja.bank_soal_id
     GROUP BY bs.id
     ORDER BY bs.id
+    LIMIT ?)
+    
+    UNION ALL
+    
+    (SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
+            GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
+    FROM (
+        SELECT * FROM bank_soal WHERE topik IN (?) AND tingkat_kesulitan = 'sedang' ORDER BY RAND() LIMIT ?
+    ) bs
+    LEFT JOIN jawaban ja ON bs.id = ja.bank_soal_id
+    GROUP BY bs.id
+    ORDER BY bs.id
+    LIMIT ?)
+    
+    UNION ALL
+    
+    (SELECT bs.id AS bank_soal_id, bs.pertanyaan, 
+            GROUP_CONCAT(ja.teks_pilihan) AS teks_pilihan
+    FROM (
+        SELECT * FROM bank_soal WHERE topik IN (?) AND tingkat_kesulitan = 'sulit' ORDER BY RAND() LIMIT ?
+    ) bs
+    LEFT JOIN jawaban ja ON bs.id = ja.bank_soal_id
+    GROUP BY bs.id
+    ORDER BY bs.id
+    LIMIT ?)
   `;
 
   let selectedSoals = [];
   console.log('Executing query:', query);
-  console.log('Placeholder values:', [topic, jumlahSoal]);
+  console.log('Placeholder values:', [topics, totalEasy, totalEasy, topics, totalMedium, totalMedium, topics, totalHard, totalHard]);
 
-  koneksi.query(query, [topic, jumlahSoal], (err, results) => {
+  // ... (previous code)
+
+  koneksi.query(query, [topics, totalEasy, totalEasy, topics, totalMedium, totalMedium, topics, totalHard, totalHard], (err, results) => {
     if (err) {
       console.error('Error selecting soal:', err);
     } else {
       // Log the results for debugging
-      console.log('Query results:', results, tingkatKesulitan);
+      console.log('Query results:', results);
 
       // Extract bank_soal_id, pertanyaan, and teks_pilihan columns
-      selectedSoals = results.map(row => ({
+      selectedSoals = results.map((row) => ({
         bank_soal_id: row.bank_soal_id,
         pertanyaan: row.pertanyaan,
-        teks_pilihan: row.teks_pilihan.split(','),
-        tingkatKesulitan: row.tingkatKesulitan // Split the teks_pilihan into an array
+        teks_pilihan: row.teks_pilihan ? row.teks_pilihan.split(',') : [], // Check for null before split
       }));
 
       // Log the contents of selectedSoals for debugging
@@ -262,38 +433,7 @@ app.post('/buatUjian', (req, res) => {
   });
 });
 
-function distributeSoals(soals, tingkatKesulitan) {
-  // Hitung jumlah soal yang harus dipilih untuk masing-masing tingkat kesulitan
-  const jumlahMudah = Math.ceil(tingkatKesulitan.mudah);
-  const jumlahSedang = Math.ceil(tingkatKesulitan.sedang);
-  const jumlahSulit = Math.ceil(tingkatKesulitan.sulit);
-  // console.log("Ceil = ",jumlahMudah,jumlahSedang,jumlahSulit)
 
-  // Pisahkan soal-soal berdasarkan tingkat kesulitan
-  const mudahSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Mudah');
-  const sedangSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Sedang');
-  const sulitSoals = soals.filter(soal => soal.tingkat_kesulitan === 'Sulit');
-  // console.log("Jumlah = ",mudahSoals.length,sedangSoals.length,sulitSoals.length)
-
-  if (mudahSoals.length < jumlahMudah || sedangSoals.length < jumlahSedang || sulitSoals.length < jumlahSulit) {
-      console.error('Tidak cukup soal untuk memenuhi persyaratan kesulitan.');
-      return [];
-  }
-
-  // Ambil jumlah soal sesuai dengan kriteria
-  const selectedMudahSoals = mudahSoals.splice(0, jumlahMudah);
-  const selectedSedangSoals = sedangSoals.splice(0, jumlahSedang);
-  const selectedSulitSoals = sulitSoals.splice(0, jumlahSulit);
-  // console.log("Tingkat = ",selectedMudahSoals.length,selectedSedangSoals.length,selectedSulitSoals.length)
-  // Gabungkan soal-soal yang terpilih dari masing-masing tingkat kesulitan
-  const selectedSoals = [
-      ...selectedMudahSoals,
-      ...selectedSedangSoals,
-      ...selectedSulitSoals
-  ];
-
-  return selectedSoals;
-}
 
 // ... (the rest of your code)
 
@@ -310,6 +450,23 @@ function saveSelectedSoalsToUjian(ujianData) {
   });
 }
 
+app.delete('/api/exams/:id', (req, res) => {
+  const itemId = parseInt(req.params.id, 10);
+
+  // Delete the exam from the database
+  const query = 'DELETE FROM exams WHERE id = ?';
+
+  koneksi .query(query, [itemId], (err, results) => {
+      if (err) {
+          console.error('Error deleting exam:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+      } else if (results.affectedRows === 0) {
+          res.status(404).json({ error: 'Exam not found' });
+      } else {
+          res.status(204).end();  // 204 No Content (success, no response body)
+      }
+  });
+});
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
